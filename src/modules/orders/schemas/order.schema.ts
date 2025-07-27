@@ -1,30 +1,24 @@
-import { Restaurant } from '@/modules/restaurants/schemas/restaurant.schema';
-import { User } from '@/modules/users/schemas/user.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 export type OrderDocument = HydratedDocument<Order>;
 
 @Schema({ timestamps: true })
 export class Order {
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Restaurant.name })
-    restaurant: mongoose.Schema.Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  user: Types.ObjectId;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
-    user: mongoose.Schema.Types.ObjectId;
+  @Prop([{ type: Types.ObjectId, ref: 'MenuItem' }])
+  items: Types.ObjectId[];
 
-    @Prop()
-    status: string;
+  @Prop()
+  totalAmount: number;
 
-    @Prop()
-    totalPrice: number;
+  @Prop({ default: 'PENDING' }) // hoặc PENDING, CONFIRMED, CANCELLED, COMPLETED
+  status: string;
 
-    @Prop()
-    orderTime: Date;
-
-    @Prop()
-    deliveryTime: Date;
-
+  @Prop()
+  notes: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

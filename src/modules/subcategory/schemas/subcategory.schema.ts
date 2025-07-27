@@ -1,0 +1,15 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+
+export type SubcategoryDocument = HydratedDocument<Subcategory>;
+
+@Schema({ timestamps: true })
+export class Subcategory {
+  @Prop({ required: true })
+  name: string; // VD: 'Cá', 'Thịt', 'Hải sản'
+
+  @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
+  category: Types.ObjectId;
+}
+
+export const SubcategorySchema = SchemaFactory.createForClass(Subcategory);

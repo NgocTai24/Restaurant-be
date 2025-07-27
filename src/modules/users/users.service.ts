@@ -12,12 +12,13 @@ import { ChangePasswordAuthDto, CodeAuthDto, CreateAuthDto } from '@/auth/dto/cr
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
-import { use } from 'passport';
+import { Role } from '../roles/schemas/role.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Role.name) private roleModel: Model<Role>,
     private readonly mailerService: MailerService
   ) { }
   // check email
@@ -36,11 +37,14 @@ export class UsersService {
     }
     //hash Password
     const hashPassword = await hashPasswordHelper(password);
+    const role = await this.roleModel.findOne({ name: 'customer' });
     const user = await this.userModel.create({
-      name, email, password: hashPassword, phone, address, image
+      name, email, password: hashPassword, phone, address, image, role: role
     })
     return {
-      _id: user._id
+      _id: user._id,
+      name: user.name,
+      email: user.email
     }
   }
 
@@ -106,10 +110,12 @@ export class UsersService {
     //hash Password
     const hashPassword = await hashPasswordHelper(password);
     const codeId = uuidv4();
+    const role = await this.roleModel.findOne({ name: 'customer' });
     const user = await this.userModel.create({
       name, email, password: hashPassword,
       isActive: false,
       codeId: codeId,
+      role: role,
       codeExpired: dayjs().add(5, 'minutes')
     })
 
@@ -125,7 +131,10 @@ export class UsersService {
     })
     // trả ra phản hồi
     return {
-      _id: user._id
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
     }
 
 

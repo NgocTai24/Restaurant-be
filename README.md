@@ -97,3 +97,13 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+nest g resource modules/roles --no-spec
+nest g resource modules/tables --no-spec
+nest g resource modules/categories --no-spec
+nest g resource modules/menu-items --no-spec
+nest g resource modules/orders --no-spec
+nest g resource modules/order-items --no-spec
+nest g resource modules/bookings --no-spec
+nest g resource modules/customers --no-spec
+nest g resource modules/statistics --no-spec
