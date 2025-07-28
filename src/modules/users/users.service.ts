@@ -73,8 +73,14 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  async findByEmail(email: string) {
-    return await this.userModel.findOne({ email })
+  async findByEmail(email: string): Promise<any> {
+    return this.userModel
+      .findOne({ email })
+      .populate({
+        path: 'role',
+        select: '_id name'
+      })
+      .lean(); // giúp trả về plain object, dễ tùy chỉnh
   }
 
   async update(updateUserDto: UpdateUserDto) {
@@ -246,7 +252,7 @@ export class UsersService {
     if (isBeforeCheck) {
       //valid => update password
       const newPassword = await hashPasswordHelper(data.password);
-      await user.updateOne({ password: newPassword})
+      await user.updateOne({ password: newPassword })
       return { isBeforeCheck };
     } else {
       throw new BadRequestException("Mã code không hợp lệ/ đã hết hạn")

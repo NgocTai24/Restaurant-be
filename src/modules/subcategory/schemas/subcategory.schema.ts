@@ -6,7 +6,7 @@ export type SubcategoryDocument = HydratedDocument<Subcategory>;
 @Schema({ timestamps: true })
 export class Subcategory {
   @Prop({ required: true })
-  name: string; // VD: 'Cá', 'Thịt', 'Hải sản'
+  name: string; 
 
   @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
   category: Types.ObjectId;

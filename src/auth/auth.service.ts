@@ -5,6 +5,7 @@ import { comparePasswordHelper } from '@/helpers/util';
 import { JwtService } from '@nestjs/jwt';
 import { ChangePasswordAuthDto, CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -14,44 +15,54 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmail(username);
-    if(!user) return null;
+    if (!user) return null;
     const isValidPassword = await comparePasswordHelper(pass, user.password);
-    if(!isValidPassword) return null;
+    if (!isValidPassword) return null;
     return user;
   }
 
   async login(user: any) {
-    const payload = { username: user.email, sub: user._id };
+    const payload = {
+      username: user.email,
+      sub: user._id,
+      role: user.role.name,
+    };
+    // Lấy lại user đã populate role
+    const userWithRole = await this.usersService.findByEmail(user.email);
     return {
       user: {
-        email: user.email,
-        _id: user._id,
-        name: user.name
+        _id: userWithRole._id,
+        name: userWithRole.name,
+        email: userWithRole.email,
+        role: {
+          _id: userWithRole.role._id,
+          name: userWithRole.role.name,
+        },
       },
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  handleRegister = async (registerDto: CreateAuthDto) =>{
+  handleRegister = async (registerDto: CreateAuthDto) => {
     return await this.usersService.handleRegister(registerDto);
   }
 
-  checkCode = async (data: CodeAuthDto) =>{
+  checkCode = async (data: CodeAuthDto) => {
     return await this.usersService.handleActive(data);
   }
 
-  retryActive = async (data: string) =>{
+  retryActive = async (data: string) => {
     return await this.usersService.retryActive(data);
   }
 
-  retryPassword = async (data: string) =>{
+  retryPassword = async (data: string) => {
     return await this.usersService.retryPassword(data);
   }
- 
-  changePassword = async (data: ChangePasswordAuthDto) =>{
+
+  changePassword = async (data: ChangePasswordAuthDto) => {
     return await this.usersService.changePassword(data);
   }
-  
+
 
 }
 

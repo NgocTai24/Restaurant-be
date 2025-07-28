@@ -9,7 +9,7 @@ import { ROLES_KEY } from '@/decorator/customize';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(
@@ -24,9 +24,10 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    if (!user || !user.role || !requiredRoles.includes(user.role.name)) {
+    if (!user || !user.role || !requiredRoles.includes(user.role)) {
       throw new ForbiddenException('Bạn không có quyền truy cập chức năng này!');
     }
+
 
     return true;
   }

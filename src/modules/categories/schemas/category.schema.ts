@@ -9,9 +9,6 @@ export class Category {
   name: string;
 
   @Prop()
-  description: string;
-
-  @Prop()
   image: string;
 }
 
