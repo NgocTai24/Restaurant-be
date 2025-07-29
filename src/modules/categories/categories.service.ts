@@ -23,9 +23,9 @@ export class CategoriesService {
   async create(createCategoryDto: CreateCategoryDto) {
     const { name, image } = createCategoryDto;
     const isExits = this.isCategoryExits(name);
-    if (isExits) {
-      throw new BadGatewayException(`Loại món ${name} đã tồn tại`)
-    }
+    // if (isExits) {
+    //   throw new BadGatewayException(`Loại món ${name} đã tồn tại`)
+    // }
     const category = await this.categoryModel.create({
       name, image
     })

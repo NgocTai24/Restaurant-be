@@ -16,7 +16,6 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { MenuItemsModule } from './modules/menu-items/menu-items.module';
 import { OrderItemsModule } from './modules/order-items/order-items.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
-import { CustomersModule } from './modules/customers/customers.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 import { UsersModule } from '@/modules/users/users.module';
 import { OrdersModule } from '@/modules/orders/orders.module';
@@ -33,7 +32,6 @@ import { RolesGuard } from './guards/roles.guard';
     CategoriesModule,
     OrderItemsModule,
     BookingsModule,
-    CustomersModule,
     StatisticsModule,
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),

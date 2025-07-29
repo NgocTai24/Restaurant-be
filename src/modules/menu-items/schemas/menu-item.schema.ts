@@ -20,9 +20,6 @@ export class MenuItem {
   @Prop()
   image: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Types.ObjectId;
-
   @Prop({ default: true })
   isAvailable: boolean;
 }
