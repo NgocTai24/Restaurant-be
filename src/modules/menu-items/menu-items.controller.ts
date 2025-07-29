@@ -26,10 +26,10 @@ export class MenuItemsController {
     return this.menuItemsService.findOne(+id);
   }
 
-  @Patch()
+  @Patch(':id')
   @Public()
-  update(@Body() updateMenuItemDto: UpdateMenuItemDto) {
-    return this.menuItemsService.update(updateMenuItemDto);
+  update(@Param('id') id: string, @Body() updateMenuItemDto: UpdateMenuItemDto) {
+    return this.menuItemsService.update(id, updateMenuItemDto);
   }
 
   @Delete(':id')

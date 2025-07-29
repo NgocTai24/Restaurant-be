@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { TableStatus } from '../Enum/status';
+
+
 
 export type TableDocument = HydratedDocument<Table>;
 
@@ -11,8 +14,8 @@ export class Table {
   @Prop()
   description: string;
 
-  @Prop({ default: 'available' }) // available, reserved, occupied
-  status: string;
+  @Prop({ type: String, enum: TableStatus, default: TableStatus.AVAILABLE })
+  status: TableStatus;
 
   @Prop()
   capacity: number;
@@ -22,3 +25,5 @@ export class Table {
 }
 
 export const TableSchema = SchemaFactory.createForClass(Table);
+
+export { TableStatus };

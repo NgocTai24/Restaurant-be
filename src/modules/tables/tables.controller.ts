@@ -2,12 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { TablesService } from './tables.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { Public } from '@/decorator/customize';
 
 @Controller('tables')
 export class TablesController {
   constructor(private readonly tablesService: TablesService) {}
 
   @Post()
+  @Public()
   create(@Body() createTableDto: CreateTableDto) {
     return this.tablesService.create(createTableDto);
   }
@@ -23,8 +25,9 @@ export class TablesController {
   }
 
   @Patch(':id')
+  @Public()
   update(@Param('id') id: string, @Body() updateTableDto: UpdateTableDto) {
-    return this.tablesService.update(+id, updateTableDto);
+    return this.tablesService.update(id, updateTableDto);
   }
 
   @Delete(':id')

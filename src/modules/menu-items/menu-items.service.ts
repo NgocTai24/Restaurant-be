@@ -43,10 +43,10 @@ export class MenuItemsService {
     return `This action returns a #${id} menuItem`;
   }
 
-  async update(updateMenuItemDto: UpdateMenuItemDto) {
+  async update(id: string, updateMenuItemDto: UpdateMenuItemDto) {
     const updatedMenuItem = await this.menuModel
       .findOneAndUpdate(
-        { _id: updateMenuItemDto._id }, // Điều kiện tìm bản ghi
+        { _id: id }, // Điều kiện tìm bản ghi
         { ...updateMenuItemDto }, // Dữ liệu cập nhật
         { new: true, runValidators: true } // Trả về bản ghi mới và chạy validator
       )

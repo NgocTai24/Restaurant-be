@@ -83,9 +83,15 @@ export class UsersService {
       .lean(); // giúp trả về plain object, dễ tùy chỉnh
   }
 
-  async update(updateUserDto: UpdateUserDto) {
-    return await this.userModel.updateOne(
-      { _id: updateUserDto._id }, { ...updateUserDto });
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const updatedUser = await this.userModel
+      .findOneAndUpdate(
+        { _id: id }, // Điều kiện tìm bản ghi dựa trên id
+        { ...updateUserDto }, // Dữ liệu cập nhật
+        { new: true, runValidators: true } // Trả về bản ghi mới và chạy validator
+      )
+      .exec();
+    return updatedUser;
   }
 
   async remove(_id: string) {
