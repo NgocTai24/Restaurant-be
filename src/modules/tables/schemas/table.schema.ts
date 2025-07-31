@@ -1,6 +1,6 @@
+import { TableStatus } from '@/modules/enums';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { TableStatus } from '../Enum/status';
 
 
 

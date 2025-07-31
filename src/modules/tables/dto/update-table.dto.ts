@@ -1,7 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateTableDto } from './create-table.dto';
 import { IsEnum, IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
-import { TableStatus } from '../Enum/status';
+import { TableStatus } from '@/modules/enums';
+
 
 export class UpdateTableDto extends PartialType(CreateTableDto) {
 

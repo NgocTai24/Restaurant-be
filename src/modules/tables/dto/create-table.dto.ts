@@ -1,5 +1,6 @@
+import { TableStatus } from '@/modules/enums';
 import { IsNotEmpty, IsEnum, IsOptional} from 'class-validator';
-import { TableStatus } from '../Enum/status';
+
 
 
 export class CreateTableDto {
