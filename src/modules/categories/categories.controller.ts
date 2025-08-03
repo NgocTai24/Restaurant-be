@@ -17,6 +17,7 @@ export class CategoriesController {
   }
 
   @Get()
+  @Roles("admin")
   findAll() {
     return this.categoriesService.findAll();
   }

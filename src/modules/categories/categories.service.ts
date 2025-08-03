@@ -36,8 +36,13 @@ export class CategoriesService {
     }
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async findAll() {
+    const categories = await this.categoryModel.find().exec();
+    return categories.map(category => ({
+      _id: category._id,
+      name: category.name,
+      image: category.image,
+    }));
   }
 
   findOne(id: number) {
