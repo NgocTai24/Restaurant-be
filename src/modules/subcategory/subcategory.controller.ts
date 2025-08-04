@@ -6,7 +6,7 @@ import { Roles } from '@/decorator/customize';
 
 @Controller('subcategory')
 export class SubcategoryController {
-  constructor(private readonly subcategoryService: SubcategoryService) {}
+  constructor(private readonly subcategoryService: SubcategoryService) { }
 
   @Post()
   @Roles("admin")
@@ -15,6 +15,7 @@ export class SubcategoryController {
   }
 
   @Get()
+  @Roles("admin")
   findAll() {
     return this.subcategoryService.findAll();
   }
@@ -25,12 +26,14 @@ export class SubcategoryController {
   }
 
   @Patch(':id')
+  @Roles("admin")
   update(@Param('id') id: string, @Body() updateSubcategoryDto: UpdateSubcategoryDto) {
-    return this.subcategoryService.update(+id, updateSubcategoryDto);
+    return this.subcategoryService.update(id, updateSubcategoryDto);
   }
 
   @Delete(':id')
+  @Roles("admin")
   remove(@Param('id') id: string) {
-    return this.subcategoryService.remove(+id);
+    return this.subcategoryService.remove(id);
   }
 }

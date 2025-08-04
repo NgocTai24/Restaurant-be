@@ -1,11 +1,11 @@
 
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Subcategory } from './schemas/subcategory.schema';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Category } from '../categories/schemas/category.schema';
 
 @Injectable()
@@ -38,19 +38,45 @@ export class SubcategoryService {
     }
   }
 
-  findAll() {
-    return this.subcategoryModel.find().populate('category');
+  async findAll() {
+    const subcategories = await this.subcategoryModel.find().exec();
+    return subcategories.map(subcategory => ({
+      _id: subcategory._id,
+      name: subcategory.name,
+      category: subcategory.category,
+    }));
   }
 
   findOne(id: number) {
     return `This action returns a #${id} subcategory`;
   }
 
-  update(id: number, updateSubcategoryDto: UpdateSubcategoryDto) {
-    return `This action updates a #${id} subcategory`;
+
+  async update(id: string, updateSubcategoryDto: UpdateSubcategoryDto) {
+    const updateSubcategori = await this.subcategoryModel.findByIdAndUpdate(
+      { _id: id },
+      { ...updateSubcategoryDto },
+      { new: true, runValidators: true }
+    )
+      .exec();
+    return updateSubcategori;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} subcategory`;
+  async remove(_id: string) {
+    // Kiểm tra subcategory có tồn tại không
+    const subcategory = await this.subcategoryModel.findById(_id);
+    if (!subcategory) {
+      throw new BadRequestException(`Không tìm thấy subcategory với id: ${_id}`);
+    }
+    //check id
+    if (mongoose.isValidObjectId(_id)) {
+      //delete
+      await this.subcategoryModel.deleteOne({ _id })
+      return {
+        message: `Đã xóa subcategory có id: ${_id} và name: ${subcategory.name}`,
+      }
+    } else {
+      throw new BadRequestException("Id khong dung dinh dang mongodb ! ")
+    }
   }
 }
