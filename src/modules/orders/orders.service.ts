@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Request } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -7,6 +7,18 @@ import mongoose, { Model } from 'mongoose';
 import { Order } from './schemas/order.schema';
 import { MenuItem } from '../menu-items/schemas/menu-item.schema';
 import { User } from '../users/schemas/user.schema';
+
+
+// Định nghĩa kiểu cho req.user
+declare module 'express' {
+  interface Request {
+    user?: {
+      _id: string;
+      email?: string;
+      role?: string;
+    };
+  }
+}
 
 @Injectable()
 export class OrdersService {
@@ -17,27 +29,72 @@ export class OrdersService {
     private readonly mailerService: MailerService
   ) { }
 
-  async create(createOrderDto: CreateOrderDto) {
-    const { user, items, totalAmount, notes } = createOrderDto;
+  async create(@Request() req, createOrderDto: CreateOrderDto) {
+    const { items, notes } = createOrderDto;
+
+    // Lấy user từ token
+    const userId = req.user?._id;
+    if (!userId) {
+      throw new BadRequestException('User không được xác thực!');
+    }
+
+    // Tính totalAmount dựa trên giá của MenuItem (giả sử mỗi item có quantity = 1)
+    let totalAmount = 0;
+    for (const itemId of items) {
+      const menuItem = await this.menuModel.findById(itemId).exec();
+      if (!menuItem) throw new NotFoundException(`Menu item ${itemId} not found`);
+      totalAmount += menuItem.price;
+    }
+
+    // Sử dụng totalAmount từ DTO nếu có, nếu không dùng giá trị tính toán
+    const finalTotalAmount = createOrderDto.totalAmount || totalAmount;
+
     const newOrder = await this.orderModel.create({
-      user,
+      user: userId,
       items,
-      totalAmount,
-      notes
+      totalAmount: finalTotalAmount,
+      notes,
     });
-    // Populate để lấy tên user
-    const populatedOrder = await newOrder.populate('user', 'name email _id');
+
+    const populatedOrder = await (await newOrder
+      .populate('user', 'name email _id'))
+      .populate('items', 'name price');
 
     return {
       _id: populatedOrder._id,
       user: populatedOrder.user,
+      items: populatedOrder.items,
       totalAmount: populatedOrder.totalAmount,
-      notes: populatedOrder.notes
-    }
+      notes: populatedOrder.notes,
+    };
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  async findAll() {
+    try {
+      // Lấy tất cả các order và populate các trường liên quan
+      const orders = await this.orderModel
+        .find({ status: { $ne: 'CANCELLED' } }) // Lọc các order chưa bị hủy (tùy chỉnh theo enum OrderStatus)
+        .populate('user', 'name email _id')
+        .populate('items', 'name price')
+        .lean()
+        .exec();
+
+      if (!orders || orders.length === 0) {
+        return {
+          statusCode: 200,
+          message: 'Không có order nào được tìm thấy',
+          data: [],
+        };
+      }
+
+      return {
+        statusCode: 200,
+        message: 'Lấy danh sách order thành công',
+        data: orders,
+      };
+    } catch (error) {
+      throw new Error('Lỗi khi lấy danh sách order: ' + error.message);
+    }
   }
 
   async findOne(id: string) {
@@ -75,8 +132,6 @@ export class OrdersService {
       .exec();
     return updateOrder;
   }
-
-
 
   async remove(_id: string) {
     // Kiểm tra order có tồn tại không

@@ -1,17 +1,15 @@
-import { IsMongoId, IsNotEmpty, IsOptional } from "class-validator";
+import { IsMongoId, IsNotEmpty, IsOptional, IsArray } from "class-validator";
 
 export class CreateOrderDto {
 
-  @IsMongoId({ message: "User không được để trống!" })
-  user: string;
+  @IsArray({ message: "Items phải là mảng!" })
+  @IsMongoId({ each: true, message: "Mỗi item phải là ID hợp lệ của MenuItem!" })
+  items: string[];
 
-  @IsMongoId({ message: "itemsMenu không được để trống!" })
-  items: string;
-
-  @IsNotEmpty({ message: "totalAmount Không được để trống !" })
+  @IsNotEmpty({ message: "totalAmount không được để trống!" })
   totalAmount: number;
 
   @IsOptional()
-  notes: string;
+  notes?: string;
 
 }
